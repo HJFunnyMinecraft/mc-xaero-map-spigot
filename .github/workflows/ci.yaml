@@ -1,4 +1,4 @@
-name: ci
+name: Gradle 部署
 
 on:
   push:
@@ -11,16 +11,16 @@ permissions:
 
 jobs:
   build:
-    name: Build
+    name: 构建
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Git repo
+      - name: 取得 Github 仓库
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Restore Gradle cache
+      - name: 取得 Gradle 缓存
         uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
@@ -28,29 +28,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Set up JDK 17
+      - name: 建立 JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
           java-version: 17
 
-      - name: Validate Gradle Wrapper
+      - name: 验证 Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Build with Gradle
+      - name: 通过 Gradle 部署
         run: |
           chmod +x gradlew
           ./gradlew build --stacktrace
 
-      - name: Install rename
+      - name: 安装“重命名”
         run: sudo apt-get install -y rename
 
-      - name: Rename file
+      - name: 重命名文件
         run: |
           cd ./build/libs/
           rename -f 's/-all//;' '' *
 
-      - name: Archive plugin jars on GitHub
+      - name: 通过 Github 存档 jar 文件
         uses: actions/upload-artifact@v3
         with:
           name: xaero-map-spigot
